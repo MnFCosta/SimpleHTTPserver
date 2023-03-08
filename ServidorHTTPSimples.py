@@ -25,13 +25,13 @@ while True:
     print(request)
 
     # Lê pagina html que será mandada como resposta
-    with open(os.path.join(__location__, 'pagina.html'), 'r') as f:
+    with open(os.path.join(__location__, 'pagina.html'), 'r', encoding="utf-8") as f:
         html_content = f.read()
 
     # Manda resposta HTTP, contendo a primeira linha da resposta para que a página seja exibida corretamente
     http_response = """\
 HTTP/1.1 200 OK
-Content-type: text/html\n
+Content-type: text/html
 
 
 {}
