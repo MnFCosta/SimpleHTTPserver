@@ -1,16 +1,15 @@
-"""
- Implements a simple HTTP/1.0 Server
-
-"""
-
 import socket
+import os
 
-
-# Define socket host and port
+# Define host e porta do socket
 SERVER_HOST = '0.0.0.0'
 SERVER_PORT = 8000
 
-# Create socket
+#usando a biblioteca OS para abrir corretamente o arquivo html
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+# Cria socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind((SERVER_HOST, SERVER_PORT))
@@ -18,17 +17,27 @@ server_socket.listen(1)
 print('Listening on port %s ...' % SERVER_PORT)
 
 while True:    
-    # Wait for client connections
+    # Espera pela conexão de cliente
     client_connection, client_address = server_socket.accept()
 
-    # Get the client request
+    # Pega a request do cliente
     request = client_connection.recv(1024).decode()
     print(request)
 
-    # Send HTTP response
-    response = 'HTTP/1.0 200 OK\n\nHello World'
-    client_connection.sendall(response.encode())
+    # Lê pagina html que será mandada como resposta
+    with open(os.path.join(__location__, 'pagina.html'), 'r') as f:
+        html_content = f.read()
+
+    # Manda resposta HTTP, contendo a primeira linha da resposta para que a página seja exibida corretamente
+    http_response = """\
+HTTP/1.1 200 OK
+Content-type: text/html\n
+
+
+{}
+""".format(html_content)
+    client_connection.sendall(http_response.encode())
     client_connection.close()
 
-# Close socket
-server_socket.close()
+
+
